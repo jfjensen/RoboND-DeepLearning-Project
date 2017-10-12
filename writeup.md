@@ -14,7 +14,7 @@ A FCN consists of 2 main parts: an **encoder** and a **decoder**. Those two part
 
 #### Encoder
 
-The *encoder* applies a number of convolutional layers to an input image, with the result that the image is down-sampled. In this implementation the encoder consists of 2 convolutional layers. 
+The *encoder* applies a number of convolutional layers to an input image, with the result that the image is down-sampled. 
 
 ```python
 def encoder_block(input_layer, filters, strides):
@@ -25,9 +25,11 @@ def encoder_block(input_layer, filters, strides):
     return output_layer
 ```
 
+In this implementation the encoder consists of 2 convolutional layers. 
+
 #### 1x1 Convolutional layer 
 
-A *1x1 convolutional layer* avoids losing spatial information unlike a fully connected layer.
+A *1x1 convolutional layer* is used to connect the encoder and the decoder. It avoids losing spatial information unlike a fully connected layer.
 
 ```python
  # Add 1x1 Convolution layer using conv2d_batchnorm().
@@ -36,7 +38,7 @@ A *1x1 convolutional layer* avoids losing spatial information unlike a fully con
 
 #### Decoder with skip connections
 
-The *decoder* consists of the exact same number of layers, but it up-samples the down-sampled image such that the output again has the same size as the input. The operation which these layers perform can be referred to as transposed convolutions or de-convolutions. In this implementation the decoder also makes use of so-called *skip connections*. These connections help the network in keeping an overview of 'the big picture' which would be lost otherwise.
+The *decoder* consists of the exact same number of layers as the encoder, but it up-samples the down-sampled image such that the output again has the same size as the input. The operation which these layers perform can be referred to as transposed convolutions or de-convolutions. In this implementation the decoder also makes use of so-called *skip connections*. These connections help the network in keeping an overview of 'the big picture' which would be lost otherwise.
 
 ```python
 def decoder_block(small_ip_layer, large_ip_layer, filters):
@@ -76,7 +78,9 @@ def fcn_model(inputs, num_classes):
     return layers.Conv2D(num_classes, 1, activation='softmax', padding='same')(x)
 ```
 
+Below is a graphical representation of the FCN:
 
+![FCN](/images/FCN_viz.jpg)
 
 ## Parameter Tuning
 
@@ -119,7 +123,7 @@ The training and validation data was supplied by Udacity. I did not collect any 
 
 Training was done using the Adam optimizer.
 
-By constructing the FCN and training it using the parameter settings mentioned above, I was able to make the network achieve a final score of 40%.
+By constructing the FCN and training it using the parameter settings mentioned above, I was able to make the network achieve a final score of 40% as required by the project rubric.
 
 The evolution of the loss rates for the training data and the validation data can be seen in the graph below:
 
@@ -147,8 +151,12 @@ For this project I only used the data which was made available by Udacity. I did
 
 #### Data augmentation
 
-Data augmentation. mirroring images, zooming in, adding noise
+In order to generate more diverse data, the existing training data (images) can be 'augmented'. Here are some ideas:
+
+* The images can be mirrored.
+* The images can be scaled (slightly).
+* Noise (Gaussian) can be added.
 
 #### Transfer learning for the encoder
 
-Transfer learning using for example a pre-trained VGG network for the encoder part, thus leaving only the 1x1 convolution and the decoder to be trained. This can drastically speed up the learning process and hence significantly lower the time needed for this.
+In order to lower the learning time, *transfer learning* can be used. For example, a pre-trained VGG network can be used for the encoder part, thus leaving only the 1x1 convolution and the decoder to be trained. This can drastically speed up the learning process and hence significantly lower the time needed.
